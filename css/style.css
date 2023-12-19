@@ -84,6 +84,11 @@ body {
 
 #hamburger-menu {
     display: none;
+    margin: 0 1rem;
+}
+
+#hamburger-menu:hover {
+    cursor: pointer;
 }
 
 /* Hero Section */
