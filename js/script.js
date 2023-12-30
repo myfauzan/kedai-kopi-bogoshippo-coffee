@@ -5,7 +5,7 @@ const navbarNav = document.querySelector('.navbar-nav');
 document.querySelector('#hamburger-menu').onclick = (e) => {
     navbarNav.classList.toggle('active');
     e.preventDefault();
-}
+};
 
 // Toogle class active shopping cart
 const shoppingCart = document.querySelector('.shopping-cart');
@@ -14,14 +14,14 @@ const shoppingCart = document.querySelector('.shopping-cart');
 document.querySelector('#shopping-cart-button').onclick = (e) => {
     shoppingCart.classList.toggle('active');
     e.preventDefault();
-}
+};
 
 // klik di luar element untuk menghilangkan nav
 const hm = document.querySelector('#hamburger-menu');
 const sb = document.querySelector('#search-button');
 const sc = document.querySelector('#shopping-cart-button');
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (!hm.contains(e.target) && !navbarNav.contains(e.target)) {
         navbarNav.classList.remove('active');
     }
@@ -31,7 +31,7 @@ document.addEventListener('click', function(e) {
     if (!sc.contains(e.target) && !shoppingCart.contains(e.target)) {
         shoppingCart.classList.remove('active');
     }
-})
+});
 
 // Toogle class active search form
 const searchForm = document.querySelector('.search-form');
@@ -42,7 +42,7 @@ document.querySelector('#search-button').onclick = (e) => {
     searchForm.classList.toggle('active');
     searchBox.focus();
     e.preventDefault();
-}
+};
 
 // modal box
 const itemDetailModal = document.querySelector('#item-detail-modal');
@@ -53,7 +53,7 @@ itemDetailButtons.forEach((btn) => {
         itemDetailModal.style.display = 'flex';
         e.preventDefault();
     };
-})
+});
 
 // klik tombol close
 document.querySelector('.modal .close-icon').onclick = (e) => {

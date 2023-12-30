@@ -1,241 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bogoshipo Coffee</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bogoshipo Coffee</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,700;1,700&display=swap" rel="stylesheet">
-    
-    <!-- Feather Icons -->
-    <script src="https://unpkg.com/feather-icons"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,700;1,700&display=swap"
+            rel="stylesheet"
+        />
 
-    <!-- My Style -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <!-- Navbar Start -->
-    <nav class="navbar">
-        <a href="#" class="navbar-logo">bogoshipo<span>coffee</span>.</a>
+        <!-- Feather Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
 
-        <div class="navbar-nav">
-            <a href="#">Home</a>
-            <a href="#about">About Us</a>
-            <a href="#menu">Menu</a>
-            <a href="#products">Products</a>
-            <a href="#contact">Contact</a>
-        </div>
+        <!-- My Style -->
+        <link rel="stylesheet" href="css/style.css" />
 
-        <div class="navbar-extra">
-            <a href="#" id="search-button"><i data-feather="search"></i></a>
-            <a href="#" id="shopping-cart-button"><i data-feather="shopping-cart"></i></a>
-            <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
-        </div>
+        <!-- AlpineJS -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"
+        ></script>
 
-        <!-- Search Form Start -->
-        <div class="search-form">
-            <input type="search" id="search-box" placeholder="search here ...">
-            <label for="search-box"><i data-feather="search"></i></label>
-        </div>
-        <!-- Search Form End -->
+        <!-- App -->
+        <script src="src/app.js"></script>
+    </head>
+    <body>
+        <!-- Navbar Start -->
+        <nav class="navbar" x-data>
+            <a href="#" class="navbar-logo">bogoshipo<span>coffee</span>.</a>
 
-        <!-- Shopping Card Start -->
-        <div class="shopping-cart">
-            <div class="cart-item">
-                <img src="img/products/1.jpg" alt="Product 1">
-                <div class="item-detail">
-                    <h3>Product 1</h3>
-                    <div class="item-price">USD $5</div>
-                </div>
-                <i data-feather="trash-2" class="remove-item"></i>
+            <div class="navbar-nav">
+                <a href="#">Home</a>
+                <a href="#about">About Us</a>
+                <a href="#menu">Menu</a>
+                <a href="#products">Products</a>
+                <a href="#contact">Contact</a>
             </div>
-            <div class="cart-item">
-                <img src="img/products/1.jpg" alt="Product 1">
-                <div class="item-detail">
-                    <h3>Product 1</h3>
-                    <div class="item-price">USD $5</div>
-                </div>
-                <i data-feather="trash-2" class="remove-item"></i>
-            </div>
-            <div class="cart-item">
-                <img src="img/products/1.jpg" alt="Product 1">
-                <div class="item-detail">
-                    <h3>Product 1</h3>
-                    <div class="item-price">USD $5</div>
-                </div>
-                <i data-feather="trash-2" class="remove-item"></i>
-            </div>
-        </div>
-        <!-- Shopping Card Start -->
-    </nav>
-    <!-- Navbar End -->
 
-    <!-- Hero Section Start -->
+            <div class="navbar-extra">
+                <a href="#" id="search-button"><i data-feather="search"></i></a>
+                <a href="#" id="shopping-cart-button">
+                    <i data-feather="shopping-cart"></i>
+                    <span
+                        class="quantity-badge"
+                        x-show="$store.cart.quantity"
+                        x-text="$store.cart.quantity"
+                    ></span>
+                </a>
+                <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
+            </div>
+
+            <!-- Search Form Start -->
+            <div class="search-form">
+                <input
+                    type="search"
+                    id="search-box"
+                    placeholder="search here ..."
+                />
+                <label for="search-box"><i data-feather="search"></i></label>
+            </div>
+            <!-- Search Form End -->
+
+            <!-- Shopping Card Start -->
+            <div class="shopping-cart">
+                <template
+                    x-for="(item, index) in $store.cart.items"
+                    x-keys="index"
+                >
+                    <div class="cart-item">
+                        <img
+                            :src="`img/products/${item.img}`"
+                            :alt="item.name"
+                        />
+                        <div class="item-detail">
+                            <h3 x-text="item.name"></h3>
+                            <div class="item-price">
+                                <span x-text="usd(item.price)"></span> &times;
+                                <button
+                                    id="remove"
+                                    @click="$store.cart.remove(item.id)"
+                                >
+                                    &minus;
+                                </button>
+                                <span x-text="item.quantity"></span>
+                                <button id="add" @click="$store.cart.add(item)">
+                                    &plus;
+                                </button>
+                                &equals;
+                                <span x-text="usd(item.total)"></span>
+                            </div>
+                        </div>
+                        <a
+                            href="#"
+                            class="remove-item"
+                            @click.prevent="$store.cart.removeItem(item.id)"
+                        >
+                            <svg
+                                width="18"
+                                height="18"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <use href="img/feather-sprite.svg#trash-2" />
+                            </svg>
+                        </a>
+                    </div>
+                </template>
+                <h4 x-show="!$store.cart.items.length" style="margin-top: 1rem">
+                    Cart is Empty
+                </h4>
+                <h4 x-show="$store.cart.items.length">
+                    Total : <span x-text="usd($store.cart.total)"></span>
+                </h4>
+
+                <div class="form-container" x-show="$store.cart.items.length">
+                    <form action="" id="checkoutForm">
+                        <h5>Customer Detail</h5>
+
+                        <label for="name">
+                            <span>Name</span>
+                            <input type="text" name="name" id="name" />
+                        </label>
+
+                        <label for="email">
+                            <span>Email</span>
+                            <input type="email" name="email" id="email" />
+                        </label>
+
+                        <label for="phone">
+                            <span>Phone</span>
+                            <input
+                                type="number"
+                                name="phone"
+                                id="phone"
+                                autocomplete="off"
+                            />
+                        </label>
+
+                        <button
+                            class="checkout-button"
+                            type="submit"
+                            id="checkout-button"
+                            value="checkout"
+                        >
+                            Checkout
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <!-- Shopping Card Start -->
+        </nav>
+        <!-- Navbar End -->
+
+        <!-- Hero Section Start -->
         <section class="hero" id="home">
             <div class="mask-container">
-            <main class="content">
-                <h1>Let's enjoy a cup of <span>Coffee</span></h1>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Error, non!</p>
-                <!-- <a href="#" class="cta">Buy Now</a> -->
-            </main>
+                <main class="content">
+                    <h1>Let's enjoy a cup of <span>Coffee</span></h1>
+                    <p>
+                        Lorem ipsum dolor, sit amet consectetur adipisicing
+                        elit. Error, non!
+                    </p>
+                    <!-- <a href="#" class="cta">Buy Now</a> -->
+                </main>
             </div>
         </section>
-    <!-- Hero Section End -->
+        <!-- Hero Section End -->
 
-    <!-- About Sectio Start -->
+        <!-- About Section Start -->
         <section id="about" class="about">
             <h2><span>About</span> Us</h2>
-        
+
             <div class="row">
                 <div class="about-img">
-                    <img src="img/about-us.jpg" alt="About Us">
+                    <img src="img/about-us.jpg" alt="About Us" />
                 </div>
                 <div class="content">
                     <h3>Why Choose our coffee?</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat aut rem quam modi rerum natus.</p>
-                    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor cum incidunt repellendus repellat ullam soluta, suscipit sapiente vero quidem voluptates.</p>
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Placeat aut rem quam modi rerum natus.
+                    </p>
+                    <p>
+                        Lorem, ipsum dolor sit amet consectetur adipisicing
+                        elit. Dolor cum incidunt repellendus repellat ullam
+                        soluta, suscipit sapiente vero quidem voluptates.
+                    </p>
                 </div>
             </div>
         </section>
-    <!-- About Sectio End -->
+        <!-- About Section End -->
 
-    <!-- Menu Section Start -->
+        <!-- Menu Section Start -->
         <section id="menu" class="menu">
             <h2><span>Our</span> Menu</h2>
-            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Enim possimus cupiditate temporibus. Laboriosam placeat optio blanditiis deleniti quod voluptas quos.</p>
-            
+            <p>
+                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Enim
+                possimus cupiditate temporibus. Laboriosam placeat optio
+                blanditiis deleniti quod voluptas quos.
+            </p>
+
             <div class="row">
                 <div class="menu-card">
-                    <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+                    <img
+                        src="img/menu/1.jpg"
+                        alt="Espresso"
+                        class="menu-card-img"
+                    />
                     <h3 class="menu-card-title">- Espresso -</h3>
                     <p class="menu-card-price">USD $5</p>
                 </div>
                 <div class="menu-card">
-                    <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+                    <img
+                        src="img/menu/1.jpg"
+                        alt="Espresso"
+                        class="menu-card-img"
+                    />
                     <h3 class="menu-card-title">- Espresso -</h3>
                     <p class="menu-card-price">USD $5</p>
                 </div>
                 <div class="menu-card">
-                    <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+                    <img
+                        src="img/menu/1.jpg"
+                        alt="Espresso"
+                        class="menu-card-img"
+                    />
                     <h3 class="menu-card-title">- Espresso -</h3>
                     <p class="menu-card-price">USD $5</p>
                 </div>
                 <div class="menu-card">
-                    <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+                    <img
+                        src="img/menu/1.jpg"
+                        alt="Espresso"
+                        class="menu-card-img"
+                    />
                     <h3 class="menu-card-title">- Espresso -</h3>
                     <p class="menu-card-price">USD $5</p>
                 </div>
             </div>
         </section>
-    <!-- Menu Section End -->
+        <!-- Menu Section End -->
 
-    <!-- Products Section Start -->
-    <section class="products" id="products">
-        <h2><span>Our</span> Best Products</h2>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam quidem vitae asperiores animi consequatur unde!</p>
+        <!-- Products Section Start -->
+        <section class="products" id="products" x-data="products">
+            <h2><span>Our</span> Best Products</h2>
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam
+                quidem vitae asperiores animi consequatur unde!
+            </p>
 
-        <div class="row">
-            <div class="product-card">
-                <div class="product-icons">
-                    <a href="#"><i data-feather="shopping-cart"></i></a>
-                    <a href="#" class="item-detail-button"><i data-feather="eye"></i></a>
-                </div>
+            <div class="row">
+                <template x-for="(item, index) in items" x-key="index">
+                    <div class="product-card">
+                        <div class="product-icons">
+                            <a
+                                href="#"
+                                id="add-cart"
+                                @click.prevent="$store.cart.addItem(item)"
+                            >
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <use
+                                        href="img/feather-sprite.svg#shopping-cart"
+                                    />
+                                </svg>
+                            </a>
+                            <a href="#" class="item-detail-button">
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <use href="img/feather-sprite.svg#eye" />
+                                </svg>
+                            </a>
+                        </div>
 
-                <div class="product-image">
-                    <img src="img/products/1.jpg" alt="Product 1">
-                </div>
+                        <div class="product-image">
+                            <img
+                                :src="`img/products/${item.img}`"
+                                :alt="item.name"
+                            />
+                        </div>
 
-                <div class="product-content">
-                    <h3>Coffee Beans 1</h3>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
+                        <div class="product-content">
+                            <h3 x-text="item.name"></h3>
+                            <div class="product-stars">
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    fill="currentColor"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <use href="img/feather-sprite.svg#star" />
+                                </svg>
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    fill="currentColor"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <use href="img/feather-sprite.svg#star" />
+                                </svg>
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    fill="currentColor"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <use href="img/feather-sprite.svg#star" />
+                                </svg>
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    fill="currentColor"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <use href="img/feather-sprite.svg#star" />
+                                </svg>
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    fill="currentColor"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <use href="img/feather-sprite.svg#star" />
+                                </svg>
+                            </div>
+                            <div class="product-price">
+                                <span x-text="usd(item.price)"></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="product-price">USD $5 <span>USD $7</span></div>
-                </div>
+                </template>
             </div>
-            <div class="product-card">
-                <div class="product-icons">
-                    <a href="#"><i data-feather="shopping-cart"></i></a>
-                    <a href="#" class="item-detail-button"><i data-feather="eye"></i></a>
-                </div>
+        </section>
+        <!-- Products Section End -->
 
-                <div class="product-image">
-                    <img src="img/products/1.jpg" alt="Product 1">
-                </div>
-
-                <div class="product-content">
-                    <h3>Coffee Beans 1</h3>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
-                    </div>
-                    <div class="product-price">USD $5 <span>USD $7</span></div>
-                </div>
-            </div>
-            <div class="product-card">
-                <div class="product-icons">
-                    <a href="#"><i data-feather="shopping-cart"></i></a>
-                    <a href="#" class="item-detail-button"><i data-feather="eye"></i></a>
-                </div>
-
-                <div class="product-image">
-                    <img src="img/products/1.jpg" alt="Product 1">
-                </div>
-
-                <div class="product-content">
-                    <h3>Coffee Beans 1</h3>
-                    <div class="product-stars">
-                        <i data-feather="star"></i>
-                        <i data-feather="star"></i>
-                        <i data-feather="star"></i>
-                        <i data-feather="star"></i>
-                        <i data-feather="star"></i>
-                    </div>
-                    <div class="product-price">USD $5 <span>USD $7</span></div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Products Section End -->
-
-    <!-- Contact Section Start -->
+        <!-- Contact Section Start -->
         <section id="contact" class="contact">
             <h2><span>Contact</span> Us</h2>
-            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ratione, voluptas accusantium autem reiciendis odio soluta!</p>
-        
+            <p>
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                Ratione, voluptas accusantium autem reiciendis odio soluta!
+            </p>
+
             <div class="row">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4070391.8631375646!2d102.2509559737155!3d-4.940962416109524!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e3b760153ac22a7%3A0x8f3b58c75f89b09a!2sLampung!5e0!3m2!1sid!2sid!4v1702918337535!5m2!1sid!2sid" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="map"></iframe>
-                
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4070391.8631375646!2d102.2509559737155!3d-4.940962416109524!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e3b760153ac22a7%3A0x8f3b58c75f89b09a!2sLampung!5e0!3m2!1sid!2sid!4v1702918337535!5m2!1sid!2sid"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    class="map"
+                ></iframe>
+
                 <form action="">
                     <div class="input-group">
                         <i data-feather="user"></i>
-                        <input type="text" placeholder="nama">
+                        <input type="text" placeholder="nama" />
                     </div>
                     <div class="input-group">
                         <i data-feather="mail"></i>
-                        <input type="text" placeholder="email">
+                        <input type="text" placeholder="email" />
                     </div>
                     <div class="input-group">
                         <i data-feather="phone"></i>
-                        <input type="text" placeholder="no hp">
+                        <input type="text" placeholder="no hp" />
                     </div>
                     <button type="submit" class="btn">Send Message</button>
                 </form>
             </div>
         </section>
-    <!-- Contact Section End -->
-    
-    <!-- Footer Start -->
+        <!-- Contact Section End -->
+
+        <!-- Footer Start -->
         <footer>
             <div class="socials">
                 <a href="#"><i data-feather="instagram"></i></a>
@@ -254,38 +425,48 @@
                 <p>Created by <a href="">myfauzan</a>. | &copy; 2023.</p>
             </div>
         </footer>
-    <!-- Footer End -->
+        <!-- Footer End -->
 
-    <!-- Modal Box Item Detail Start -->
-    <div class="modal" id="item-detail-modal">
-        <div class="modal-container">
-            <a href="#" class="close-icon"><i data-feather="x"></i></a>
-            <div class="modal-content">
-                <img src="img/products/1.jpg" alt="Product 1">
-                <div class="product-content">
-                    <h3>Product 1</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum architecto quo ea odit ipsam pariatur minus impedit quaerat nobis, provident placeat, adipisci unde voluptatem quisquam!</p>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
+        <!-- Modal Box Item Detail Start -->
+        <div class="modal" id="item-detail-modal">
+            <div class="modal-container">
+                <a href="#" class="close-icon"><i data-feather="x"></i></a>
+                <div class="modal-content">
+                    <img src="img/products/1.jpg" alt="Product 1" />
+                    <div class="product-content">
+                        <h3>Product 1</h3>
+                        <p>
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Voluptatum architecto quo ea odit ipsam
+                            pariatur minus impedit quaerat nobis, provident
+                            placeat, adipisci unde voluptatem quisquam!
+                        </p>
+                        <div class="product-stars">
+                            <i data-feather="star" class="star-full"></i>
+                            <i data-feather="star" class="star-full"></i>
+                            <i data-feather="star" class="star-full"></i>
+                            <i data-feather="star" class="star-full"></i>
+                            <i data-feather="star"></i>
+                        </div>
+                        <div class="product-price">
+                            USD $5 <span>USD $7</span>
+                        </div>
+                        <a href="#"
+                            ><i data-feather="shopping-cart"></i
+                            ><span>Add to cart</span></a
+                        >
                     </div>
-                    <div class="product-price">USD $5 <span>USD $7</span></div>
-                    <a href="#"><i data-feather="shopping-cart"></i><span>Add to cart</span></a>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Modal Box Item Detail End -->
+        <!-- Modal Box Item Detail End -->
 
-    <!-- Feather Icons -->
-    <script>
-      feather.replace();
-    </script>
+        <!-- Feather Icons -->
+        <script>
+            feather.replace();
+        </script>
 
-    <!-- My Javascript -->
-    <script src="js/script.js"></script>
-</body>
+        <!-- My Javascript -->
+        <script src="js/script.js"></script>
+    </body>
 </html>
