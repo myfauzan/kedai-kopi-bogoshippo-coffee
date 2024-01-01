@@ -1,25 +1,21 @@
-const itemDetailModal = document.querySelector('#item-detail-modal');
-
 document.addEventListener('alpine:init', () => {
     Alpine.data('products', () => ({
         items: [
-            {id: 1, name: 'Robusta Brazil', img: '1.jpg', price: 5.5},
-            {id: 2, name: 'Arabica Blend', img: '2.jpg', price: 4.5},
-            {id: 3, name: 'Primo Passo', img: '3.jpg', price: 4},
-            {id: 4, name: 'Aceh Gayo', img: '4.jpg', price: 5.3},
-            {id: 5, name: 'Sumatra Mandheling', img: '5.jpg', price: 5.8}
+            {id: 1, name: 'Robusta Brazil', img: '1.jpg', price: 40000},
+            {id: 2, name: 'Arabica Blend', img: '2.jpg', price: 45000},
+            {id: 3, name: 'Primo Passo', img: '3.jpg', price: 43000},
+            {id: 4, name: 'Aceh Gayo', img: '4.jpg', price: 53000},
+            {id: 5, name: 'Sumatra Mandheling', img: '5.jpg', price: 58000}
         ]
     }));
 
     Alpine.store('details', {
+        showDetail: false,
         selectedItem: {},
         detailItem(product) {
-            console.log(product);
             this.selectedItem = product;
-            itemDetailModal.style.display = 'flex';
-        },
-        closeDetail() {
-            itemDetailModal.style.display = 'none';
+            this.showDetail = true;
+            console.log(product, this.showDetail);
         }
     });
 
@@ -39,7 +35,7 @@ document.addEventListener('alpine:init', () => {
                     total: newItem.price
                 });
                 this.quantity++;
-                this.total += parseFloat(newItem.price);
+                this.total += newItem.price;
             } else {
                 // jika barang sudah ada, cek apakah barang beda atau sama dengan yang ada di cart
                 this.items = this.items.map((item) => {
@@ -67,7 +63,7 @@ document.addEventListener('alpine:init', () => {
                     total: newItem.price
                 });
                 this.quantity++;
-                this.total += parseFloat(newItem.price);
+                this.total += newItem.price;
             } else {
                 // jika barang sudah ada, cek apakah barang beda atau sama dengan yang ada di cart
                 this.items = this.items.map((item) => {
@@ -77,9 +73,9 @@ document.addEventListener('alpine:init', () => {
                     } else {
                         // jika barang sudah ada, tambah quantity dan totalnya
                         item.quantity++;
-                        item.total = parseFloat(item.price * item.quantity);
+                        item.total = item.price * item.quantity;
                         this.quantity++;
-                        this.total += parseFloat(item.price);
+                        this.total += item.price;
                         return item;
                     }
                 });
@@ -100,9 +96,9 @@ document.addEventListener('alpine:init', () => {
                         return item;
                     } else {
                         item.quantity--;
-                        item.total = parseFloat(item.price * item.quantity);
+                        item.total = item.price * item.quantity;
                         this.quantity--;
-                        this.total -= parseFloat(item.price);
+                        this.total -= item.price;
                         return item;
                     }
                 });
@@ -110,7 +106,7 @@ document.addEventListener('alpine:init', () => {
                 // jika barangnya sisa 1
                 this.items = this.items.filter((item) => item.id !== id);
                 this.quantity--;
-                this.total -= parseFloat(cartItem.price);
+                this.total -= cartItem.price;
             }
         },
         removeItem(id) {
@@ -125,7 +121,7 @@ document.addEventListener('alpine:init', () => {
 
                 // Kurangi quantity dan total sesuai dengan item yang dihapus
                 this.quantity -= removedItem.quantity;
-                this.total -= parseFloat(removedItem.total);
+                this.total -= removedItem.total;
 
                 // Hapus item dari array
                 this.items.splice(cartItemIndex, 1);
@@ -134,11 +130,72 @@ document.addEventListener('alpine:init', () => {
     });
 });
 
+// Form Validation
+const checkoutButton = document.querySelector('.checkout-button');
+checkoutButton.disabled = true;
+
+const form = document.querySelector('#checkoutForm');
+
+form.addEventListener('keyup', function () {
+    for (let i = 0; i < form.elements.length; i++) {
+        if (form.elements[i].value.length !== 0) {
+            checkoutButton.classList.remove('disabled');
+            checkoutButton.classList.add('disabled');
+        } else {
+            return false;
+        }
+    }
+
+    checkoutButton.disabled = false;
+    checkoutButton.classList.remove('disabled');
+});
+
+// kirim data ketika tombol checkout diklik
+checkoutButton.addEventListener('click', async function (e) {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const data = new URLSearchParams(formData);
+    const objData = Object.fromEntries(data);
+    // const message = formatMessage(objData);
+    // window.open(
+    //     'http://wa.me/62089628863724?text=' + encodeURIComponent(message)
+    // );
+
+    // minta transaction token menggunakan ajax /fetch
+    try {
+        const response = await fetch('php/placeOrder.php', {
+            method: 'POST',
+            body: data
+        });
+        const token = await response.text();
+        window.snap.pay(token);
+        console.log(token);
+    } catch (err) {
+        console.log(err.message);
+    }
+
+    console.log(objData);
+});
+
+// format pesan whatsapp
+const formatMessage = (obj) => {
+    return `Data Customer
+    Nama: ${obj.name}
+    Email: ${obj.email}
+    No. Hp: ${obj.phone}
+Data Pesanan
+    ${JSON.parse(obj.items).map(
+        (item) => `${item.name} (${item.quantity} x ${usd(item.total)}) \n`
+    )}
+TOTAL: ${usd(obj.total)}
+Terima kasih.`;
+};
+
 // konversi ke USD
 const usd = (number) => {
-    return new Intl.NumberFormat('en-EN', {
+    return new Intl.NumberFormat('id-ID', {
         style: 'currency',
-        currency: 'USD'
-        // minimumFractionDigits: 0
+        currency: 'IDR',
+        minimumFractionDigits: 0
     }).format(number);
 };
