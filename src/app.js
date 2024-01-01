@@ -1,3 +1,5 @@
+const itemDetailModal = document.querySelector('#item-detail-modal');
+
 document.addEventListener('alpine:init', () => {
     Alpine.data('products', () => ({
         items: [
@@ -8,6 +10,18 @@ document.addEventListener('alpine:init', () => {
             {id: 5, name: 'Sumatra Mandheling', img: '5.jpg', price: 5.8}
         ]
     }));
+
+    Alpine.store('details', {
+        selectedItem: {},
+        detailItem(product) {
+            console.log(product);
+            this.selectedItem = product;
+            itemDetailModal.style.display = 'flex';
+        },
+        closeDetail() {
+            itemDetailModal.style.display = 'none';
+        }
+    });
 
     Alpine.store('cart', {
         items: [],
